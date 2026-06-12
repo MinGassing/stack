@@ -1,0 +1,12 @@
+# config for air, the hot reload tool the dev container runs
+# when a watched file changes, air reruns `cmd` and restarts `bin`
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main ./cmd/server"
+bin = "./tmp/main"
+# also watch .sql so editing a migration restarts the server (migrations run on boot)
+include_ext = ["go", "sql"]
+exclude_dir = ["tmp"]

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_USER: mingas
+      POSTGRES_PASSWORD: mingas
+      POSTGRES_DB: mingas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mingas -d mingas"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://mingas:mingas@db:5432/mingas?sslmode=disable
+    volumes:
+      - ./backend:/app
+      - gomodcache:/go/pkg/mod
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  gomodcache:
